@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<script src="https://d3js.org/d3.v4.js"></script>
+	<style>
+	    /* CSS  code */
+
+	    .felt-banner {
+	    	border-color: white;
+	    	border-width: 10px;
+	    	border-style: solid;
+
+	    	background-color: rgb(185, 217, 235);
+	    	width: 300px;
+	    	height: 100px;
+
+	    	margin: 0 auto;
+	    	display: block;
+	    }
+
+	    .text {
+	    	color: white;
+	    	text-align: center;
+	    	font-size: 2.5vw;
+    	}
+
+	</style>
+</head>
+<body>
+    <!-- HTML code -->
+    <script>
+        // JS code 
+
+        var margin = {top: 20, right: 20, bottom: 20, left: 20},
+			w = 1000 - margin.left - margin.right,
+			h = 500 - margin.top - margin.bottom;
+
+		var rect_width = 5;
+		var rect_height = 5;
+
+		var padding = 20;
+		var dataset;
+
+        
+        var rowConverter = function(d) {
+        	return {
+        		Name: d.Name,
+        		State: d.State,
+        		Year: +d.Year,
+        		Rank: +d.rank,
+        	};
+        }
+   
+        ///////////////////////////////////////////////////////////////////////////////
+
+        d3.csv("data/ranks.csv", rowConverter, function(data) {
+
+        	dataset = data;
+
+        	var svg = d3.select("body").append("svg")
+					.attr("width", w + margin.left + margin.right)
+						.attr("height", h + margin.top + margin.bottom)
+					.append("g")
+						.attr("transform",
+									"translate(" + margin.left + "," + margin.top + ")");
+
+			console.log(data);
+
+
+			var yScale = d3.scaleLinear()
+					.domain([d3.max(dataset, function(d) { return d.Rank;}), 
+						d3.min(dataset, function(d) { return d.Rank; })])
+					.range([h - padding, padding]);
+
+			var xScale = d3.scaleLinear()
+					.domain([d3.max(dataset, function(d) { return d.Year; }), 
+						d3.min(dataset, function(d) { return d.Year; })])
+					.range([padding, w-padding]);
+
+			svg.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr("x", function(d) {
+					return xScale(d.Year);
+				})
+				.attr("y", function(d) {
+					return yScale(d.Rank);
+				})
+				.attr("width", rect_width)
+				.attr("height", rect_height)
+				.attr("fill", "blue")
+				.attr("opacity", 0.6);
+
+        });
+
+    </script>
+<body>	
